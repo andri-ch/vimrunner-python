@@ -155,7 +155,8 @@ class TestServerFunctionalTests(unittest.TestCase):
         self.vim = Server()
 
     def tearDown(self):
-        self.vim.kill()
+        self.client.quit()
+        #self.vim.kill()
         # .kill() works with vim, but not with gvim
         # or self.vim.remote_send(":q! <Enter>")
 
@@ -163,6 +164,7 @@ class TestServerFunctionalTests(unittest.TestCase):
         client = self.vim.start_in_other_terminal()
         #client = self.vim.start_gvim()
         #client = self.vim.start()
+        self.client = client
         # test server functions work alright:
         self.vim.remote_send(':ls! <Enter>')
         time.sleep(1)

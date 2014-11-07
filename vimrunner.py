@@ -97,6 +97,7 @@ class Server(object):
         # if vimrc will be '', vim will still use $HOME/.vimrc
         self.noplugin = '--noplugin' if noplugin else ''
         self.extra_args = extra_args
+        self.cmd = None
         self.format_vim_args()
 
     def format_vim_args(self):
@@ -111,7 +112,7 @@ class Server(object):
         self.vim_args.extend(self.extra_args)
         self.cmd = " ".join(self.vim_args)
         # Eg:
-        # >>> vim_args
+        # >>> self.cmd
         # "/usr/bin/gvim -n --noplugin --servername VIMRUNNER#1"
 
     def start(self, timeout=5, testing=False):
