@@ -9,8 +9,10 @@ a vim editor by python code, for example, in an ipython session.
 
 This work tries to be the python equivalent of Vimrunner ruby gem found at:
     http://rubydoc.info/gems/vimrunner/index
+
 I thank the author(s) for the effort and nice level of abstraction
 they put in this gem.
+
 """
 
 import os.path
@@ -43,24 +45,38 @@ def create_vim_list(values):
 
 class Server(object):
     """
-    Represents a remote Vim server. A Server has the responsibility of
-    starting a Vim process and communicating with it through the clientserver
-    interface. The process can be started with "start" and stopped with
-    "kill". If given the servername of an existing Vim instance, it can
+    Represents a remote Vim editor server. A Server has the responsibility of
+    starting a Vim process and communicating with it through the
+    client - server interface. The process can be started with one of the
+    "start*" family of methods:
+
+        start_in_other_terminal()
+
+        start_gvim()
+
+        start()
+
+    The server can be stopped with "kill" method, but it is recommended to
+    use client's "quit" method .
+
+    If given the servername of an existing Vim instance, it can
     control that instance without the need to start a new process.
 
     A Client would be necessary as an actual interface, though it is possible
-    to use a Server directly to invoke --remote commands on its Vim instance.
+    to use a Server directly to invoke --remote-send and --remote-expr
+    commands on its Vim instance.
 
     Example:
 
-        vim = Server("My_server")
+        >>> vim = Server("My_server")
+        >>> client = vim.start_in_other_terminal()
+        >>> client.edit("some_file.txt")
 
     """
     vimrc = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'default_vimrc')
 
-    def __init__(self, name='', executable='vim', vimrc=vimrc, noplugin=True,
+    def __init__(self, name='', executable='vim', vimrc='', noplugin=True,
                  extra_args=['-n']):
         """
         Initialize a Server.
@@ -74,7 +90,6 @@ class Server(object):
                          default Server.vimrc file is used, it is needed by
                          this module in order to work fine. If user wants to
                          use a custom vimrc, it should be sourced using client.
-                         If vimrc='', $HOME/.vimrc will be sourced.
                          (default: Server.vimrc).
             noplugin   - Do not load any plugins.
             extra_args - command line args that can be given to vim before it
@@ -83,24 +98,22 @@ class Server(object):
 
         Example:
 
-            # use user's vimrc
-            vim = Server(vimrc="")
-            # no swap file will be used:
-            vim = Server(extra_args=['-n']
+            >>> # no swap file will be used:
+            >>> vim = Server(extra_args=['-n']
 
         """
         self.name = name or 'VIMRUNNER#%s' % random.randint(1, 10000)
         self.executable = executable if os.path.isabs(executable) else \
             self._get_abs_path(executable)
 
-        self.vimrc = '-u %s' % vimrc if vimrc else ''
-        # if vimrc will be '', vim will still use $HOME/.vimrc
+        vimrc = vimrc if vimrc else Server.vimrc
+        self.vimrc = '-u %s' % vimrc
         self.noplugin = '--noplugin' if noplugin else ''
         self.extra_args = extra_args
         self.cmd = None
-        self.format_vim_args()
+        self._format_vim_args()
 
-    def format_vim_args(self):
+    def _format_vim_args(self):
         """Utility function used by start_*() family of functions.
         Returns nothing."""
         # format arguments list for the Vim subprocess, order matters
@@ -118,7 +131,7 @@ class Server(object):
     def start(self, timeout=5, testing=False):
         """Starts Vim server in a subprocess, eg.:
 
-            subprocess.call("vim -n --servername GOTOWORD", shell=True)
+            >>> subprocess.call("vim -n --servername GOTOWORD", shell=True)
 
         but we don't want to wait for Vim to complete and to block this script
         so we need some thread like behaviour that is obtained using the
@@ -148,11 +161,13 @@ class Server(object):
         and vim will malfunction.
         Returns a Client.
         We need something like:
+
             x-terminal-emulator -e 'sh -c "python vim_server_no_gui.py"'
+
         It is useful when testing a vim plugin to launch vim in other
         terminal so that the test script's output doesn't get polluted by vim.
         """
-        self.format_vim_args()
+        self._format_vim_args()
         self.cmd = "x-terminal-emulator -e '%s'" % self.cmd
         # x-terminal-emulator chooses the default terminal in a cross-desktop
         # way (debian, ubuntu, mint, etc.)
@@ -165,7 +180,7 @@ class Server(object):
         # kill its original process
         self.extra_args.append('-f')
         # -f seems not to work
-        self.format_vim_args()
+        self._format_vim_args()
         return self.start()
 
     def connect(self, timeout=5):
@@ -173,8 +188,8 @@ class Server(object):
         Returns a client.
         Eg:
 
-            vim = Server(name="SOME_SERVER_NAME")
-            client = vim.connect()
+            >>> vim = Server(name="SOME_SERVER_NAME")
+            >>> client = vim.connect()
 
         """
         self.check_is_running(timeout)
@@ -186,6 +201,8 @@ class Server(object):
         """Kills the Vim instance started in a subprocess. Returns nothing.
         It is useless if you connected to server with connect(). In that case
         use quit() instead.
+
+        kill() works with vim, but not with gvim.
         """
         if hasattr(self, 'server'):
             # this one is the parent of gvim: vim.server._popen.pid
@@ -210,7 +227,7 @@ class Server(object):
         Returns nothing.
         Eg:
 
-            vim --servername VIMRUNNER --remote-send ':qa! <Enter>'
+           $ vim --servername VIMRUNNER --remote-send ':qa! <Enter>'
 
         """
         subprocess.call(
@@ -249,7 +266,8 @@ class Server(object):
         return self.name.upper() in self.server_list()
 
     def check_is_running(self, timeout):
-        """Raises a RuntimeError exception if it can't find a Vim server
+        """Raises a RuntimeError exception if it can't find, during timeout,
+        a Vim server with the same name as the one given at initialization
         during timeout.
         """
         while timeout:
@@ -282,7 +300,7 @@ class Client(object):
         key sequence. The keys are sent as-is, so it'd probably be better to
         use the wrapper methods, normal(), insert() and so on. Eg:
 
-            client.type(':ls <Enter>')
+            >>> client.type(':ls <Enter>')
 
         """
         self.server.remote_send(keys)
@@ -291,7 +309,7 @@ class Client(object):
         """Send commands to a Vim server.
         Used for Vim cmds and everything except for calling functions. Eg:
 
-            client.command("ls")
+            >>> client.command("ls")
 
         """
         output = self.eval("VimrunnerPyEvaluateCommandOutput('%s')" % cmd)
@@ -306,8 +324,8 @@ class Client(object):
         Returns the String output of the expression, stripped by useless
         whitespaces. Eg:
 
-            # get the line number of the cursor
-            client.eval('line(".")')
+            >>> # get the line number of the cursor
+            >>> client.eval('line(".")')
 
         Note that Vim makes a clear distinction between ' and ".
         """
@@ -323,10 +341,10 @@ class Client(object):
         filename - a String that can be a relative or absolute path
         Eg:
 
-            # suppose 'test' folder is in pwd:
-            edit('test/a-file.txt')
-            # otherwise an absolute path is needed:
-            edit('/home/user/path_to_file/file.txt')
+            >>> # suppose 'test' folder is in pwd:
+            >>> client.edit('test/a-file.txt')
+            >>> # otherwise an absolute path is needed:
+            >>> client.edit('/home/user/path_to_file/file.txt')
 
         """
         self.command("edit %s" % filename)
@@ -342,12 +360,12 @@ class Client(object):
         We want to send 3 keys: Ctrl w p and according to Vim docs you would
         write: '<C-w>p' but these keys need to be escaped with a backslash '\':
 
-            # in Vim you would write
-            :call feedkeys("\<C-w>p")
-            # this function can be used like this:
-            client = Client(server)
-            client.feedkeys('\<C-w>p')
-            client.feedkeys('\<C-w>k')
+            >>> # in Vim you would write
+            >>> :call feedkeys("\<C-w>p")
+            >>> # this function can be used like this:
+            >>> client = Client(server)
+            >>> client.feedkeys('\<C-w>p')
+            >>> client.feedkeys('\<C-w>k')
 
         """
         #self.command('call feedkeys("%s")' % keys)
@@ -376,7 +394,7 @@ class Client(object):
         Switches Vim to insert mode and types in the given text at current
         cursor position. Eg:
 
-            insert('Hello World!')
+            >>> client.insert('Hello World!')
 
         """
         self.normal("i%s" % text)
@@ -399,7 +417,7 @@ class Client(object):
 
         Returns nothing. Eg:
 
-            client.append_runtimepath("/path/to/a/plugin/dir")
+            >>> client.append_runtimepath("/path/to/a/plugin/dir")
 
         """
         dir_path = os.path.abspath(dir)
@@ -409,14 +427,14 @@ class Client(object):
         """
         Echo the expression in Vim. Eg:
 
-            # get list of directories where plugins reside
-            echo("&runtimepath")
-            # output color brightness
-            echo("&bg")
-            # echo a string in Vim
-            echo('"testing echo function with a string"')
-            # or double quotes need to be escaped
-            echo("\"testing echo function with a string\"")
+            >>> # get list of directories where plugins reside
+            >>> client.echo("&runtimepath")
+            >>> # output color brightness
+            >>> client.echo("&bg")
+            >>> # echo a string in Vim
+            >>> client.echo('"testing echo function with a string"')
+            >>> # or double quotes need to be escaped
+            >>> client.echo("\"testing echo function with a string\"")
 
         Returns the String output.
         """
@@ -442,7 +460,7 @@ class Client(object):
 
         Eg:
 
-            prepend_runtimepath('/home/user/plugin_dir')
+            >>> client.prepend_runtimepath('/home/user/plugin_dir')
 
         """
         dir_path = os.path.abspath(dir)
@@ -464,7 +482,7 @@ class Client(object):
 
         Examples:
 
-            vim.add_plugin('/home/andrei/.vim/my_plugin/', 'plugin/rails.vim')
+        >>> client.add_plugin('/home/andrei/.vim/my_plugin/', 'plugin/rails.vim')
 
         Returns nothing.
         """
@@ -476,14 +494,15 @@ class Client(object):
         """Reads lines from buffer with index 'buf' or, by default, from the
         current buffer in the range lnum -> end.
         Uses vim's getbufline().
-        Returns one string with the lines joined with newlines '\n' marking
+
+        Returns one string with the lines joined with newlines '\\\\n' marking
         the end of each line.
         Eg:
 
-            one_line = read_buffer("1")
-            two_lines = read_buffer("1", "2")
-            all_lines = read_buffer("1", "$")
-            two_lines = read_buffer("line('$') - 1", "'$'")
+            >>> one_line = client.read_buffer("1")
+            >>> two_lines = client.read_buffer("1", "2")
+            >>> all_lines = client.read_buffer("1", "$")
+            >>> two_lines = client.read_buffer("line('$') - 1", "'$'")
 
         """
         if not buf:
@@ -495,19 +514,27 @@ class Client(object):
         'lnum'. Calls vim's setline() function.
 
         lnum - can be a number or a special character like $, '.'. etc.
+
         text - can be a string or a list of strings.
+
         Returns '0' or '1', as strings.
+
         Eg:
+
         Input is a string
-            write_buffer("2", "write to line number 2")
-            write_buffer("'$'", "write to last line")
-            write_buffer("\"$\"", "write to last line")
-            write_buffer("'$'", "['last line', 'add after last line']")
-            write_buffer("line('$') + 1", "add after last line")
+          >>> client.write_buffer("2", "write to line number 2")
+          >>> client.write_buffer("'$'", "write to last line")
+          >>> client.write_buffer("\"$\"", "write to last line")
+          >>> client.write_buffer("'$'", "['last line', 'add after last line']")
+          >>> client.write_buffer("line('$') + 1", "add after last line")
+
         Input is a list
-            l = ['last line', 'add after last line']
-            write_buffer("'$'",l)
+
+          >>> l = ['last line', 'add after last line']
+          >>> client.write_buffer("'$'",l)
+
         Pay attention, simple and double quotes matter.
+
         """
         if type(text) == list:
             return self.eval("setline(%s, %s)" % (lnum, create_vim_list(text)))

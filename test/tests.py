@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+"""For good test results, navigate to 'test' directory. Otherwise it won't
+find the test file:
+$: cd test
+Run it:
+$: ./tests.py
+"""
+
+
 import sys
 import os.path
 import unittest
@@ -153,18 +161,21 @@ class TestServerFunctionalTests(unittest.TestCase):
     """
     def setUp(self):
         self.vim = Server()
+        #self.client = self.vim.start()
+        #self.client = self.vim.start_in_other_terminal()
+        #self.client = self.vim.start_gvim()
 
     def tearDown(self):
         self.client.quit()
-        #self.vim.kill()
-        # .kill() works with vim, but not with gvim
-        # or self.vim.remote_send(":q! <Enter>")
+        pass
 
     def test_basic_interaction(self):
-        client = self.vim.start_in_other_terminal()
-        #client = self.vim.start_gvim()
-        #client = self.vim.start()
-        self.client = client
+        #self.client = self.vim.start()
+        self.client = self.vim.start_in_other_terminal()
+        #self.client = self.vim.start_gvim()
+
+        client = self.client
+
         # test server functions work alright:
         self.vim.remote_send(':ls! <Enter>')
         time.sleep(1)
