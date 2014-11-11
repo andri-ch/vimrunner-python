@@ -6,7 +6,8 @@ interactively control a vim editor by python code, for example, in an ipython
 session.
 
 ## How it all started
-I created a class that used the [vim python module](http://vimdoc.sourceforge.net/htmldoc/if_pyth.html#python-vim)
+I created a class that used the [vim python module]
+(http://vimdoc.sourceforge.net/htmldoc/if_pyth.html#python-vim)
 to emulate a vim buffer and that would act like a list, so you could read and 
 write lines and manipulate text using python.
 
@@ -20,6 +21,18 @@ So, this python module is heavily inspired by the project mentioned above.
 There is a package on PyPI.org ...
 
 ## Usage
+```python
+import vimrunner
+
+# initialize vim server
+vim = vimrunner.Server()
+
+# start GVIM as server and get a client connected to it
+client = vim.start_gvim()
+client.edit('any_file')
+client.source('path/to/vim/plugin')
+```
+
 Documentation is available at (link to readthedocs)
 
 For any suggestions regarding the module and its documentation, please submit 
