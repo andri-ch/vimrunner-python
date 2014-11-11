@@ -33,7 +33,7 @@ client.edit('any_file')
 client.source('path/to/vim/plugin')
 ```
 
-Documentation is available at (http://andri-ch.readthedocs.org/en/latest/)
+Documentation is available at http://andri-ch.readthedocs.org/en/latest/
 
 For any suggestions regarding the module and its documentation, please submit 
 an issue using [GitHub issue tracker]
