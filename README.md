@@ -1,8 +1,8 @@
 # Vimrunner.py
 Module that implements a client and server interface useful for controlling a 
-vim server programatically. This module could be used for unit testing or 
-integration testing for a vim plugin written in python. Or you can use it to 
-interactively control a vim editor by python code, for example, in an ipython 
+Vim server programatically. This module could be used for unit testing or 
+integration testing for a Vim plugin written in Python. Or you can use it to 
+interactively control a Vim editor by python code, for example, in an Ipython 
 session.
 
 ## How it all started
