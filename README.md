@@ -1,4 +1,4 @@
-# Vimrunner.py
+# Vimrunner
 Module that implements a client and server interface useful for controlling a 
 Vim server programatically. This module could be used for unit testing or 
 integration testing for a Vim plugin written in Python. Or you can use it to 
@@ -37,5 +37,5 @@ Documentation is available at http://andri-ch.readthedocs.org/en/latest/
 
 For any suggestions regarding the module and its documentation, please submit 
 an issue using [GitHub issue tracker]
-(https://github.com/andri-ch/vimrunner.py/issues) 
+(https://github.com/andri-ch/vimrunner-python/issues) 
 

@@ -24,7 +24,7 @@ class PyTestCommand(TestCommand):
     """
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = []
+        self.test_args = ['test/tests.py']
         self.test_suite = True
 
     def run(self):
@@ -42,11 +42,15 @@ setup(
     author_email='andreichiver@gmail.com',
     license='MIT',
     url='https://github.com/andri-ch/vimrunner.py',
-    provides=['vimrunner'],
-    py_modules=['vimrunner'],
+    #provides=['vimrunner'],
+    #py_modules=['vimrunner'],
+    #package_dir=['vimrunner'],
+    packages=['vimrunner'],
+    package_data={'vimrunner': ['default_vimrc']},
+    #data_files=[('', ['default_vimrc'])],
     classifiers=[
-        'Development Status :: 1 - Alpha',
-        'Topic :: Utilities',
+        'Development Status :: 3 - Alpha',
+        'Topic :: Software Development',
         'Programming Language :: Python :: 2.7',
         #'Programming Language :: Python :: 3.2',
         #'Programming Language :: Python :: 3.3',
@@ -58,5 +62,7 @@ setup(
     ],
     cmdclass={
         'test': PyTestCommand,
+        # so you can do at the command line:
+        # python setup.py test
     },
 )

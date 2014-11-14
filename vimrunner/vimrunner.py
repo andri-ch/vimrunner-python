@@ -340,15 +340,21 @@ class Client(object):
         getting focus.
 
         filename - a String that can be a relative or absolute path
+
+        Returns, if the file is found, a string with the name of the document
+        otherwise it returns an empty string.
         Eg:
 
             >>> # suppose 'test' folder is in pwd:
-            >>> client.edit('test/a-file.txt')
+            >>> result = client.edit('test/a-file.txt')
+            >>> result
+            '"test/a-file.txt" 10L, 304C'
+
             >>> # otherwise an absolute path is needed:
             >>> client.edit('/home/user/path_to_file/file.txt')
 
         """
-        self.command("edit %s" % filename)
+        return self.command("edit %s" % filename)
 
     def feedkeys(self, keys):
         """
