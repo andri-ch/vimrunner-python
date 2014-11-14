@@ -1,5 +1,6 @@
- Vimrunner
+Vimrunner
 ======================================================================
+
 Module that implements a client and server interface useful for controlling a 
 Vim server programatically. This module could be used for unit testing or 
 integration testing for a Vim plugin written in Python. Or you can use it to 
