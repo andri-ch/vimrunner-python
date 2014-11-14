@@ -41,6 +41,7 @@ Usage
 ======================================================================
 
 .. code:: python
+
     import vimrunner
     
     # initialize vim server
