@@ -1,9 +1,9 @@
-.. vimrunner.py documentation master file, created by
+.. vimrunner documentation master file, created by
    sphinx-quickstart on Mon Nov 10 12:39:52 2014.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to vimrunner.py's documentation!
+Welcome to Vimrunner's documentation!
 ========================================
 
 .. Contents:
@@ -11,7 +11,7 @@ Welcome to vimrunner.py's documentation!
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: vimrunner
+.. automodule:: vimrunner.vimrunner
    :members:
 
 

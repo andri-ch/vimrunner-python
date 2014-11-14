@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'vimrunner.py'
+project = u'Vimrunner'
 copyright = u'2014, Andrei Chiver'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -167,7 +167,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'vimrunnerpydoc'
+htmlhelp_basename = 'vimrunnerdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -186,7 +186,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'vimrunnerpy.tex', u'vimrunner.py Documentation',
+  ('index', 'vimrunner.tex', u'Vimrunner Documentation',
    u'Andrei Chiver', 'manual'),
 ]
 
@@ -216,7 +216,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'vimrunnerpy', u'vimrunner.py Documentation',
+    ('index', 'vimrunner', u'Vimrunner Documentation',
      [u'Andrei Chiver'], 1)
 ]
 
@@ -230,8 +230,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'vimrunnerpy', u'vimrunner.py Documentation',
-   u'Andrei Chiver', 'vimrunnerpy', 'One line description of project.',
+  ('index', 'vimrunner', u'Vimrunner Documentation',
+   u'Andrei Chiver', 'Vimrunner', 'One line description of project.',
    'Miscellaneous'),
 ]
 

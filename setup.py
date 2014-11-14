@@ -41,7 +41,7 @@ setup(
     author='Andrei Chiver',
     author_email='andreichiver@gmail.com',
     license='MIT',
-    url='https://github.com/andri-ch/vimrunner.py',
+    url='https://github.com/andri-ch/vimrunner-python',
     #provides=['vimrunner'],
     #py_modules=['vimrunner'],
     #package_dir=['vimrunner'],
