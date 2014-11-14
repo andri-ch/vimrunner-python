@@ -4,8 +4,8 @@
 Module that implements a client and server interface useful for controlling a
 vim server.
 This module could be used for unit testing or integration testing
-for a vim plugin written in python. Or you can use it to interactively control
-a vim editor by python code, for example, in an ipython session.
+for a Vim plugin written in Python. Or you can use it to interactively control
+a Vim editor by Python code, for example, in an Ipython session.
 
 This work tries to be the python equivalent of Vimrunner ruby gem found at:
     http://rubydoc.info/gems/vimrunner/index
@@ -33,6 +33,7 @@ def create_vim_list(values):
         '["first line", "second line"]'
 
     values - a list of strings
+
     We need double quotes not single quotes to create a Vim list.
     Returns a string that is a properly written Vim list of strings.
     This result can be fed to vim's eval function to create a list in vim.
@@ -339,15 +340,21 @@ class Client(object):
         getting focus.
 
         filename - a String that can be a relative or absolute path
+
+        Returns, if the file is found, a string with the name of the document
+        otherwise it returns an empty string.
         Eg:
 
             >>> # suppose 'test' folder is in pwd:
-            >>> client.edit('test/a-file.txt')
+            >>> result = client.edit('test/a-file.txt')
+            >>> result
+            '"test/a-file.txt" 10L, 304C'
+
             >>> # otherwise an absolute path is needed:
             >>> client.edit('/home/user/path_to_file/file.txt')
 
         """
-        self.command("edit %s" % filename)
+        return self.command("edit %s" % filename)
 
     def feedkeys(self, keys):
         """

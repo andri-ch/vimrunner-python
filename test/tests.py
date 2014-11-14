@@ -187,9 +187,20 @@ class TestServerFunctionalTests(unittest.TestCase):
         time.sleep(1)
         client.command("<Enter>")
         # edit non existing file (creates a new empty one)
-        client.edit('client_new_test_file')
+        res = client.edit('client_new_test_file')
+        self.assertEqual('', res)
+
         # edit existing file
-        client.edit('ft_test_text')
+        # case when test file is run with $PWD as its parent dir with:
+        # $: py.test ./tests.py
+        res = client.edit('ft_test_text')
+        if not res:
+            # case when test file is run with $PWD as parent of 'test' dir:
+            # $: py.test test/tests.py
+            # OR
+            # $: python setup.py test
+            res = client.edit('test/ft_test_text')
+        self.assertTrue('ft_test_text' in res)
 
         # test search for a word, line number is returned else '0'
         out = client.search('test', 'w')
