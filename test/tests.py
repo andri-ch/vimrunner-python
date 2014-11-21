@@ -42,7 +42,8 @@ class TestServerInit(unittest.TestCase):
     def test_executable_when_default(self):
         vim = Server()
         self.assertEqual(vim.executable,
-                         subprocess.check_output(['which', 'vim']).strip('\n'))
+                         subprocess.check_output(['which', 'vim']).decode(
+                             'utf-8').strip('\n'))
 
     def test_executable_when_given_as_arg(self):
         vim = Server(executable='/usr/local/bin/vim')
@@ -50,16 +51,18 @@ class TestServerInit(unittest.TestCase):
 
     def test_executable_when_gvim(self):
         vim = Server(executable='gvim')
+        gvim_path = subprocess.check_output(['which', 'gvim'])
+        gvim_path = gvim_path.decode('utf-8').strip('\n')
         try:
-            self.assertEqual(vim.executable, subprocess.check_output(
-                ['which', 'gvim']).strip('\n'))
+            self.assertEqual(vim.executable, gvim_path)
         except subprocess.CalledProcessError:
             return "gvim might not be installed at all."
 
     def test_get_abs_path(self):
         path = Server._get_abs_path(exe='gvim')
-        self.assertEqual(path,
-                         subprocess.check_output(['which', 'gvim']).strip('\n'))
+        gvim_path = subprocess.check_output(['which', 'gvim'])
+        gvim_path = gvim_path.decode('utf-8').strip('\n')
+        self.assertEqual(path, gvim_path)
 
     def test_vimrc_when_default(self):
         """In this case we don't want any user vimrc file."""
@@ -118,7 +121,8 @@ class TestServer(unittest.TestCase):
         #self.vim.start(testing=True)
         # this test might pass or not, depending if the user has gvim installed
         try:
-            subprocess.check_output(['which', 'gvim']).strip('\n')
+            path = subprocess.check_output(['which', 'gvim'])
+            path = path.decode('utf-8').strip('\n')
         except subprocess.CalledProcessError:
             return unittest.skip("gvim might not be installed, so this test "
                                  "won't pass")
