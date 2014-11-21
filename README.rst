@@ -33,9 +33,6 @@ PyPI, so you can install it with:
 Alternatively, you can just drop vimrunner.py file into your project - it is 
 self-contained.
 
-It has been tested only on python2.7, but work has been started to port it to 
-Python 3.
-
 Testing
 ======================================================================
 

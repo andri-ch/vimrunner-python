@@ -252,15 +252,17 @@ class Server(object):
         result = subprocess.check_output(
             [self.executable, '--servername', self.name, '--remote-expr',
              expression])
-        return result
+        return result.decode('utf-8')
 
     def server_list(self):
         """Retrieves a list of names of currently running Vim servers.
 
         Returns a List of String server names currently running.
         """
-        return subprocess.check_output([self.executable,
-                                        '--serverlist']).split('\n')
+        path = subprocess.check_output([self.executable,
+                                        '--serverlist'])
+        path = path.decode('utf-8')
+        return path.split('\n')
 
     def is_running(self):
         "Returns a Boolean indicating wheather server exists and is running."
@@ -282,9 +284,13 @@ class Server(object):
 
     @staticmethod
     def _get_abs_path(exe):
-        """Uses 'which' shell command to get the absoulte path of the
+        """Uses 'which' shell command to get the absolute path of the
         executable."""
-        return subprocess.check_output(['which', "%s" % exe]).strip('\n')
+        path = subprocess.check_output(['which', "%s" % exe])
+        # output from subprocess, sockets etc. is bytes even in py3, so
+        # convert it to unicode
+        path = path.decode('utf-8')
+        return path.strip('\n')
 
 
 class Client(object):
