@@ -35,8 +35,8 @@ class PyTestCommand(TestCommand):
 
 setup(
     name='vimrunner',
-    version='1.0.2',
-    description='Implements a client and server interface useful for controlling a Vim editor programmatically.',
+    version='1.0.3',
+    description='Interface for controlling a Vim editor using Python code.',
     long_description=read('README.rst'),
     author='Andrei Chiver',
     author_email='andreichiver@gmail.com',
