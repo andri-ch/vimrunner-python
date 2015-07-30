@@ -156,6 +156,29 @@ class Server(object):
 
         return Client(self)
 
+    def start_headless(self, timeout=5, testing=False):
+        """Starts headless Vim server in a subprocess.
+
+            vim -n --servername GOTOWORD >/dev/null 2>&1 <&1
+
+        No input and output is connected to Vim server,
+        so that you can run a unit test without a dirty log.
+
+        testing - flag useful for tests when you don't want to start Vim server
+
+        Returns a client connected to Vim server.
+        """
+        if not testing:
+            self.server = subprocess.Popen(
+                args=self.cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                shell=True
+            )
+            self.check_is_running(timeout)
+        return Client(self)
+
     def start_in_other_terminal(self):
         """Start vim in a terminal other than the one used to run this script
         (test script) because vim will pollute the output of the test script

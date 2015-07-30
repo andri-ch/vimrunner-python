@@ -117,6 +117,15 @@ class TestServer(unittest.TestCase):
         self.assertTrue('--servername' in self.vim.server._args[0])
         # server._args is a tuple which needs unpacking to get a list
 
+    def test_start_headless(self):
+        try:
+            self.vim.start_headless(testing=False, timeout=5)
+        except RuntimeError:
+            return
+        self.assertTrue(self.vim.is_running())
+        self.vim.quit()
+        self.assertFalse(self.vim.is_running())
+
     def test_start_gvim(self):
         #self.vim.start(testing=True)
         # this test might pass or not, depending if the user has gvim installed
@@ -177,6 +186,7 @@ class TestServerFunctionalTests(unittest.TestCase):
         #self.client = self.vim.start()
         self.client = self.vim.start_in_other_terminal()
         #self.client = self.vim.start_gvim()
+        #self.client = self.vim.start_headless()
 
         client = self.client
 
