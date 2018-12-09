@@ -16,6 +16,7 @@ they put in this gem.
 """
 
 import os.path
+import shutil
 import multiprocessing
 import subprocess
 import random
@@ -289,7 +290,7 @@ class Server(object):
 
     def is_running(self):
         "Returns a Boolean indicating wheather server exists and is running."
-        return self.name.upper() in self.server_list()
+        return self.name.upper() in [s.strip() for s in self.server_list()]
 
     def check_is_running(self, timeout):
         """Raises a RuntimeError exception if it can't find, during timeout,
@@ -309,7 +310,7 @@ class Server(object):
     def _get_abs_path(exe):
         """Uses 'which' shell command to get the absolute path of the
         executable."""
-        path = subprocess.check_output(['which', "%s" % exe])
+        path = subprocess.check_output([shutil.which(exe)])
         # output from subprocess, sockets etc. is bytes even in py3, so
         # convert it to unicode
         path = path.decode('utf-8')
